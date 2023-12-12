@@ -1,14 +1,29 @@
-use std::{env, error::Error, ffi::OsString, io, process, fs::File};
+use std::{collections::HashMap, env, error::Error, ffi::OsString, process};
+use serde::Deserialize;
+
+// type Record = HashMap<String, String>;
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+struct Record {
+    latitude: f64,
+    longitude: f64,
+    population: Option<u64>,
+    city: String,
+    state: String,
+}
 
 fn run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
-    let file = File::open(file_path)?;
-    let mut rdr = csv::Reader::from_reader(file);
+    let mut rdr = csv::ReaderBuilder::new()
+        .has_headers(true)
+        .from_path(file_path)?;
 
-    for result in rdr.records() {
+    for result in rdr.deserialize::<Record>() {
         let record = result?;
         println!("{:?}", record);
     }
+
     Ok(())
 }
 
