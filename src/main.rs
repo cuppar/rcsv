@@ -1,19 +1,29 @@
-use std::{collections::HashMap, env, error::Error, ffi::OsString, process};
 use serde::Deserialize;
+use std::{env, error::Error, ffi::OsString, io, process};
 
-// type Record = HashMap<String, String>;
+fn write_run() -> Result<(), Box<dyn Error>> {
+    let file_path = get_first_arg()?;
+    let mut wtr = csv::Writer::from_path(file_path)?;
+    wtr.write_record(&["a", "b"])?;
+    wtr.write_record(&["1", "2"])?;
+    wtr.flush()?;
+    Ok(())
+    let a = Some(());
+    a.map_or(default, f)
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct Record {
     latitude: f64,
     longitude: f64,
+    #[serde(deserialize_with = "csv::invalid_option")]
     population: Option<u64>,
     city: String,
     state: String,
 }
 
-fn run() -> Result<(), Box<dyn Error>> {
+fn read_run() -> Result<(), Box<dyn Error>> {
     let file_path = get_first_arg()?;
     let mut rdr = csv::ReaderBuilder::new()
         .has_headers(true)
@@ -35,7 +45,7 @@ fn get_first_arg() -> Result<OsString, Box<dyn Error>> {
 }
 
 fn main() {
-    if let Err(err) = run() {
+    if let Err(err) = write_run() {
         println!("{}", err);
         process::exit(1);
     }
