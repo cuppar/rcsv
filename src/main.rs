@@ -8,8 +8,6 @@ fn write_run() -> Result<(), Box<dyn Error>> {
     wtr.write_record(&["1", "2"])?;
     wtr.flush()?;
     Ok(())
-    let a = Some(());
-    a.map_or(default, f)
 }
 
 #[derive(Debug, Deserialize)]
